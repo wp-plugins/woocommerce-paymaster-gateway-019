@@ -1,9 +1,11 @@
-=== PayMaster for WooCommerce ===
+﻿=== PayMaster for WooCommerce ===
 Contributors: Qazomardok
 Tags: paymaster, payment getaway, woo commerce, woocommerce, ecommerce
 Requires at least: 3.0
 Tested up to: 4.0.1
-Stable tag: stable
+Stable tag: 0.2.0
+License: GPLv3
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 Allows you to use PayMaster payment gateway with the WooCommerce plugin.
 
@@ -13,41 +15,35 @@ Allows you to use PayMaster payment gateway with the WooCommerce plugin.
 
 После активации плагина зайти на страницу WooCommerce->Настройки->Оплата->Paymaster. Заполните все поля настроек, следуя подсказкам.
 
-
-В paymaster:
+= В paymaster: =
 
 1. Добавьте Ваш сайт;
 2. На странице Учетная запись -> Список сайтов -> Настройки":
-<ul style="list-style:none;">
-<li>Выберите и запомните "Тип подписи"</li>
-<li>Придумайте и запомните "Секретный ключ"</li>
-</ul>
+*Выберите и запомните "Тип подписи"</li>
+*Придумайте и запомните "Секретный ключ"
 
-В разделе "Обратные вызовы" укажите следующие параметры:
-<ul style="list-style:none;">
-<li>Payment notification: http://your_domain/?wc-api=wc_paymaster&paymaster=notification</li>
-<li>Success redirect: http://your_domain/?wc-api=wc_paymaster&paymaster=success</li>
-<li>Failure redirect: http://your_domain/?wc-api=wc_paymaster&paymaster=failure</li>
-<li>Invoice confirmation: http://your_domain/?wc-api=wc_paymaster&paymaster=invoice</li>
-<li>Метод отсылки данных для всех строк: POST запрос</li>
-</ul>
+= В разделе "Обратные вызовы" укажите следующие параметры: = 
+
+*Payment notification: http://your_domain/?wc-api=wc_paymaster&paymaster=notification
+*Success redirect: http://your_domain/?wc-api=wc_paymaster&paymaster=success
+*Failure redirect: http://your_domain/?wc-api=wc_paymaster&paymaster=failure
+*Invoice confirmation: http://your_domain/?wc-api=wc_paymaster&paymaster=invoice
+*Метод отсылки данных для всех строк: POST запрос
 Где "your_domain" - домен Вашего сайта.
 
 3. На странице "Учетная запись -> Пользователи":
-<ul style="list-style:none;">
-<li>Создайте нового пользователя с правами "Бухгалтер" и способом входа "Автоматический"</li>
-</ul>
+*Создайте нового пользователя с правами "Бухгалтер" и способом входа "Автоматический"
 
-
-Более подробно на [странице плагина](http://qazomardok.ru/товар/woocommerce-paymaster/)
+= Более подробно на [странице плагина](http://qazomardok.ru/товар/woocommerce-paymaster/) =
 
 
 == Installation ==
-1. Убедитесь что у вас установлена последняя версия плагина [WooCommerce](/www.woothemes.com/woocommerce)
-2. Распакуйте архив и загрузите "paymaster-for-woocommerce" в папку ваш-домен/wp-content/plugins
-3. Активируйте плагин
+* Убедитесь что у вас установлена последняя версия плагина [WooCommerce](/www.woothemes.com/woocommerce)
+* Распакуйте архив и загрузите "paymaster-for-woocommerce" в папку ваш-домен/wp-content/plugins
+* Активируйте плагин
 
 == Screenshots ==
+
 1. Логотип
 2. Страницу настроек модуля вы можете найти в меню Woocommerce->Настройки->Оплата-Paymaster
 3. На странице заказа выводится лог действий (используются "заметки"), а также вы можете заметить ссылку "Оформить возврат денег".
@@ -57,9 +53,9 @@ Allows you to use PayMaster payment gateway with the WooCommerce plugin.
 7. Следуйте инструкциям платежной системы.
 8. Следуйте инструкциям платежной системы.
 9. Следуйте инструкциям платежной системы.
-10. После оплаты для завершения платежа система переведен вас на страницу результата
-11. После того, как платеж был проведен и завершен, вам откротся страница "Чек"
-12. В консоли заказов информация об оплате получается и выводится с помощью Api Paymaster
+10. После оплаты для завершения платежа система переведен вас на страницу результата.
+11. После того, как платеж был проведен и завершен, вам откротся страница "Чек".
+12. В консоли заказов информация об оплате получается и выводится с помощью Api Paymaster.
 
 
 == Changelog ==
@@ -82,3 +78,6 @@ Allows you to use PayMaster payment gateway with the WooCommerce plugin.
 * Исправления ошибок
 = 0.1 =
 * Релиз Develop-версии плагина
+
+== Upgrade Notice ==
+Юзабилити обновление.
