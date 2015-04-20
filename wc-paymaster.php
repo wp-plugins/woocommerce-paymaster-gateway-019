@@ -3,7 +3,7 @@
   Plugin Name: WooCommerce Paymaster Payment Gateway
   Plugin URI: http://qazomardok.ru/
   Description: Allows you to use PayMaster (extended Webmoney Merchant) payment gateway with the WooCommerce plugin. Requiered Woocommerce 2.2.3
-  Version: 0.2.01
+  Version: 0.3
   Author: Grishunin Anton
   Author URI: http://qazomardok.ru
  */
@@ -23,7 +23,7 @@
 
 add_filter( 'woocommerce_currency_symbol', 'paymaster_rub_currency_symbol', 10, 2 );
 add_filter( 'woocommerce_currencies', 'paymaster_rub_currency', 10, 1 );
-add_action( 'admin_enqueue_scripts', 'paym_style' );	
+add_action( 'admin_enqueue_scripts', 'paym_style');	
 add_action('plugins_loaded', 'woocommerce_paymaster', 0);
 	
 function paymaster_rub_currency_symbol( $currency_symbol, $currency ) {
@@ -41,6 +41,8 @@ function paymaster_rub_currency( $currencies ) {
 function paym_style() {
 	wp_register_style( 'paym-woocommerce-style', plugin_dir_url(__FILE__).'css/paym.css', null, 1.0, 'screen' );
 	wp_enqueue_style( 'paym-woocommerce-style' );
+	wp_enqueue_script( 'jquery-deserialize',  plugin_dir_url(__FILE__).'js/status.js', false, '1.1.1', false );
+	wp_enqueue_style( 'jquery-deserialize' );
 		
 	$thiser = get_option('woocommerce_paymaster_settings');	
 			if ( $thiser['enabled'] != "yes"){
@@ -48,15 +50,7 @@ function paym_style() {
 			wp_register_style( 'paymalt-woocommerce-style', plugin_dir_url(__FILE__).'css/paym_alt.css', null, $v, 'screen' );
 			wp_enqueue_style( 'paymalt-woocommerce-style' );
 	}
-}
-/*
-function($name=NULL) {
-	switch($name) {
-	
-	
-	}
-
-}*/
+} 
 
 function woocommerce_paymaster(){
 
@@ -77,7 +71,7 @@ function woocommerce_paymaster(){
  *		class WC_paymaster()
 ****************************************/ 
 	add_filter('woocommerce_payment_gateways', 'add_paymaster_gateway');
-	add_action('admin_head', 'add_views_column_css');
+	add_action('admin_head', 'add_views_column_css', 999);
 	add_filter('manage_edit-shop_order_columns', 'paym_columns_names', 11 );
 	add_action('manage_shop_order_posts_custom_column', 'paym_columns_content', 2 );
 	//add_action('woocommerce_admin_order_actions_start','wc_customer_order_csv_export_export_order', 10, 2);
@@ -103,6 +97,7 @@ function woocommerce_paymaster(){
 		$arg['password'] =  $thiser->get_option('paymaster_robo_pass');
 		$arg['nonce'] = wp_create_nonce( $inv_id.current_time('timestamp').rand(1,3));
 		$arg['accountID'] = $thiser->get_option('account_id');
+		
 	if($pm_id==NULL) {
 		$argu['paymentID'] = get_post_meta($inv_id, '_order_id_in_paymaster', true);
 	} else {
@@ -162,7 +157,8 @@ function woocommerce_paymaster(){
 		echo '<a class="submitdelete deletion" href="'. wp_nonce_url( admin_url( 'post.php?post='.$order->id.'&action=edit&order_id=' . base64_encode(base64_encode($Refunds[0]->refundPayment)) ), 'wc_pm_return_payment' ).'">Оформить возврат денег</a> &bull; '. $order->order_total. ''.get_option('woocommerce_currency');
 			
 		}
-			
+		
+		
 		}  else {
 		
 		
@@ -181,9 +177,7 @@ function woocommerce_paymaster(){
 		}
 	}
 
-	echo '</div></li>';
-		
-		 
+	echo '</div></li><div id="liout"></div>';
 				
 	}
 
@@ -207,13 +201,12 @@ function woocommerce_paymaster(){
 		
 		
 		?><li class="wide">
-			<div id="delete-action"><?
+			<div id="delete-action"><?php
 		if($error = err_codes($answrw->ErrorCode, $answrw->ErrorDesc)) { 
-			//		echo $error; 
 					
 			} else {
 			$Refund	= $answrw->Refund;
-			 echo 'Платеж №'.$Refund->PaymentID.' ';
+			echo 'Платеж №'.$Refund->PaymentID.' ';
 			switch($Refund->State) {
 				case"PENDING": echo 'поставлен в очередь на совершение операции возврата'; break;
 				case"EXECUTING": echo 'в стадии проведения транзакции возврата платежа'; break;
@@ -225,16 +218,16 @@ function woocommerce_paymaster(){
 			$STATUS['STATUS']	= 'refunded';
 			$order->add_order_note('[PAYM]'.serialize($STATUS).'[/PAYM]'); 
 			$order->update_status('refunded','[PAYM]'.serialize($STATUS).'[/PAYM]');
-		//			if ( !update_post_meta(...) ) add_post_meta(...) )
+			
 			add_post_meta( $STATUS['PA_WPID'], '_payment_status', $STATUS['PA_ID'], true );
 			
-			?><script type="text/javascript">document.location.href = '<? echo admin_url( 'edit.php?post_type=shop_order') ?>';</script><?
+			?><script type="text/javascript">document.location.href = '<?php echo admin_url( 'edit.php?post_type=shop_order') ?>';</script><?php
 			
 			}
 	?>
 		</div>
 
-		</li><?
+		</li><?php
 		
 			
 		} else {
@@ -272,9 +265,7 @@ function woocommerce_paymaster(){
 		function shhi(id)
 		{
 		document.getElementById(\'jj_row\'+id);
-		//
-		// Проверяем отображается ли в данный момент этот блок
-		//
+		
 		if (  document.getElementById(\'jj_row\'+id).style.display == \'none\' )
 		{
 			  document.getElementById("jj_row"+id).style.display = \'block\';
@@ -340,43 +331,35 @@ function woocommerce_paymaster(){
 	});
 	</script>"; } 
 	
-	// Получение статуса из Paymaster. Используется Аякс
+	// Получение статуса из Paymaster. ajax
 	function paym_status_callback() {
 		
 		$order = $_POST['order'];
 		$hash = $_POST['hash'];
-		
 		$url = base64_decode(base64_decode($hash));
-		//echo $_POST['order'].'==='.$url; 
-		
-		
-		//exit();
 		$thiser = new WC_paymaster;
 		
 		$answ = json_decode(file_get_contents($url));
-		
-		
+				
 		if($answ->ErrorCode != 0) echo '<b>'.err_codes($answ->ErrorCode).'</b><br>';
 		$ref = '';
 		if($thiser->get_option('refunds_on')=='yes'){	
 			$urlreturn = url_for_return_list($order, $answ->Payment->PaymentID);
 			$answrreturn = json_decode(file_get_contents($urlreturn['url']));
 			echo $answrreturn->Payment->PaymentID;
-		//	var_dump($answrreturn);
-		
+					
 			$Refunds = $answrreturn->Response->Refunds;
 		
 		if($error = err_codes($answrreturn->ErrorCode, $answrreturn->ErrorDesc)) { 
 			} else {
-			
-			switch($Refunds[0]->State) {
-				default: $ref = ''; break;
-				case"PENDING": $ref = 'Поставлен в очередь на совершение операции возврата'; break;
-				case"EXECUTING": $ref = 'В стадии проведения транзакции возврата платежа'; break;
-				case"SUCCESS": $ref = 'Был возвращен'; break;
-				case"FAILURE": $ref = 'Не возвращен'; break;
+				switch($Refunds[0]->State) {
+					default: $ref = ''; break;
+					case"PENDING": $ref = 'Поставлен в очередь на совершение операции возврата'; break;
+					case"EXECUTING": $ref = 'В стадии проведения транзакции возврата платежа'; break;
+					case"SUCCESS": $ref = 'Был возвращен'; break;
+					case"FAILURE": $ref = 'Не возвращен'; break;
+				}
 			}
-			 }
 		} 
 		
 		echo '<a class="paym-status" onclick="shhi('.$order.')">';
@@ -417,12 +400,11 @@ function woocommerce_paymaster(){
 	}
 		
 	function paym_columns_content_status( $order ) {
-		
 		$notes = get_sys_payment_id($order);
 		echo $notes['id'];
 	}
 
-	function get_sys_payment_id($order_id) { 
+	function get_sys_payment_id($order_id) {
 
 	$args = array(
 		'status' => 'approve',
@@ -687,13 +669,13 @@ function woocommerce_paymaster(){
 					'hashtype' => array(
 						'title' => __( 'Тип подписи', 'woocommerce' ),
 						'type'        => 'select',
-						'description'	=>  __( 'Способ формирования хеша (контрольной подписи) - MD5 или SHA1', 'woocommerce' ),
+						'description'	=>  __( 'Способ формирования хеша (контрольной подписи) - MD5 или SHA. Внимание! Не забудьте изменить тип подписи в личном кабинете Paymaster в разделе "Настройки сайта" - "Технические параметры"', 'woocommerce' ),
 						'default'	=> 'MD5',
-						'desc_tip'    => true,
+						// 'desc_tip'    => true,
 						'options'     => array(
 							'MD5' => __( 'MD5', 'woocommerce' ),
-							'SHA1' => __( 'SHA1', 'woocommerce' ),
-							'SHA256' => __( 'SHA256', 'woocommerce' ),
+							// 'SHA1' => __( 'SHA1', 'woocommerce' ), 
+							// 'SHA256' => __( 'SHA256', 'woocommerce' ),
 						)
 					),
 				
@@ -966,7 +948,7 @@ function woocommerce_paymaster(){
 				
 				$inv_id = $_POST['LMI_PAYMENT_NO'];
 				$order = new WC_Order($inv_id);
-				//			if ( !update_post_meta(...) ) add_post_meta(...) )
+				
 				add_post_meta( $STATUS['PA_WPID'], '_order_id_in_paymaster', $STATUS['PA_ID'], true );
 				
 				if($this->check_ipn_request_is_valid($_POST)){
@@ -1138,7 +1120,6 @@ function pm_cron() {
 	$period = $thiser['paymaster_period_cron'];
 	if(empty($period) or ($period<600)) {$period = 600;} 
 			
-	//if($now-$period>0) {
 	if($now-$period>=$last_time) {
 
 		global $woocommerce;
@@ -1162,14 +1143,10 @@ function pm_cron() {
 		
 		
 		$querys = new WP_Query( $pmargs );
-	/*	var_dump($pmargs);
-		var_dump($querys);
-		var_dump($pmargs);*/
 		
 		while ( $querys->have_posts() ) {
 			$querys->the_post();
 			$order_id_in_pm = get_post_meta(get_the_ID(), '_order_id_in_paymaster', true);
-	//	var_dump($order_id_in_pm);
 			
 			if($order_id_in_pm) {
 			
